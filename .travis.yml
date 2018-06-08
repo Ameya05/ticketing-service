@@ -1,0 +1,10 @@
+{
+  "os": "linux",
+  "jdk": "oraclejdk8",
+  "dist": "precise",
+  "sudo": false,
+  "group": "stable",
+  "script": "mvn clean package",
+  "install": true,
+  "language": "java",
+}
