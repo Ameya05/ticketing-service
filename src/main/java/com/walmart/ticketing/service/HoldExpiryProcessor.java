@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
+import com.walmart.ticketing.cache.Cache;
 import com.walmart.ticketing.models.Event;
 import com.walmart.ticketing.models.SeatHold;
 import com.walmart.ticketing.models.VenueSeats;
@@ -11,6 +12,10 @@ import com.walmart.ticketing.models.VenueSeats;
 public class HoldExpiryProcessor implements Runnable {
 
 	private static HoldExpiryProcessor instance;
+	
+	private ConcurrentMap<Integer, SeatHold> seatHoldCache = Cache.getseatHoldCache();
+	private Queue<SeatHold> seatHoldQueue = Cache.getSeatHoldQueue();
+	private ConcurrentMap<Integer, Event> eventCache = Cache.getEventCache();
 	
 	private HoldExpiryProcessor() {
 		
@@ -28,9 +33,6 @@ public class HoldExpiryProcessor implements Runnable {
 	public void run() {
 		
 		System.out.println("Started Hold Expiry Processor ");
-		Queue<SeatHold> seatHoldQueue = Event.seatHoldQueue;
-		ConcurrentMap<Integer, SeatHold> seatHoldCache = Event.seatHoldCache;
-		ConcurrentMap<Integer, Event> eventCache = Event.eventCache;
 		
 		while(true) 
 			

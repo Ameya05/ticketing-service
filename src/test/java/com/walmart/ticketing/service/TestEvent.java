@@ -46,20 +46,19 @@ public class TestEvent extends TestCase{
 		assertEquals(totalSeats, walmartConference.numSeatsAvailable());
 	}
 	
-//	public void testHoldExpire() 
-//	{
-//		walmartConference = new Event(4, venue);
-//		
-//		walmartConference.findAndHoldSeats(40, "luke@gmail.com");
-//		
-//		try {
-//			Thread.sleep(6000);
-//		} catch (InterruptedException e) {
-//		}
-//		
-//		assertEquals(totalSeats, walmartConference.numSeatsAvailable());
-//		
-//	}
+	public void testHoldExpire() 
+	{
+		walmartConference = new Event(4, venue);
+		walmartConference.findAndHoldSeats(40, "luke@gmail.com");
+		
+		try {
+			Thread.sleep(6000);
+		} catch (InterruptedException e) {
+		}
+		
+		assertEquals(totalSeats, walmartConference.numSeatsAvailable());
+		
+	}
 	
 	public void testReserveAfterHoldExpire() 
 	{
@@ -83,7 +82,6 @@ public class TestEvent extends TestCase{
 		SeatHold holdToReserve = walmartConference.findAndHoldSeats(40, "Anakin@gmail.com");
 		walmartConference.findAndHoldSeats(40, "jarjar@yahoo.com");
 		walmartConference.findAndHoldSeats(40, "bensolo@gmail.com");
-		walmartConference.findAndHoldSeats(100, "hansolo@rocketmail.com");
 
 		walmartConference.reserveSeats(holdToReserve.getSeatHoldId(), holdToReserve.getHoldCustomerEmail());
 		walmartConference.findAndHoldSeats(40, "maul@msn.com");
@@ -97,5 +95,31 @@ public class TestEvent extends TestCase{
 		
 		assertEquals(totalSeats - 40, walmartConference.numSeatsAvailable());
 		
+	}
+	
+	public void testBookMoreThanAvailable() 
+	{
+		walmartConference = new Event(2, venue);
+		walmartConference.findAndHoldSeats(200, "c3p0@lucas.com");
+		
+		assertEquals(totalSeats, walmartConference.numSeatsAvailable());
+	}
+	
+	public void testBookNegativeSeats() 
+	{
+		walmartConference = new Event(2, venue);
+
+		SeatHold sh = walmartConference.findAndHoldSeats(-20, "c3p0@lucas.com");
+		
+		assertNull(sh);
+	}
+	
+	public void testBookBlankEmail() 
+	{
+		walmartConference = new Event(2, venue);
+
+		SeatHold sh = walmartConference.findAndHoldSeats(20, "");
+		
+		assertNull(sh);
 	}
 }

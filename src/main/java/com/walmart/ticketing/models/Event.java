@@ -1,12 +1,11 @@
 package com.walmart.ticketing.models;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.walmart.ticketing.cache.Cache;
 import com.walmart.ticketing.exception.TicketingException;
 import com.walmart.ticketing.service.HoldExpiryProcessor;
 import com.walmart.ticketing.service.TicketService;
@@ -21,9 +20,9 @@ public class Event implements TicketService{
 	private static int defaultHoldDuration = 300;
 	private static int eventSerialID = 0;
 
-	public static final ConcurrentMap<Integer, SeatHold> seatHoldCache = new ConcurrentHashMap<Integer, SeatHold>();
-	public static final Queue<SeatHold> seatHoldQueue = new LinkedList<SeatHold>();
-	public static final ConcurrentMap<Integer, Event> eventCache = new ConcurrentHashMap<Integer, Event>();
+	private ConcurrentMap<Integer, SeatHold> seatHoldCache = Cache.getseatHoldCache();
+	private Queue<SeatHold> seatHoldQueue = Cache.getSeatHoldQueue();
+	private ConcurrentMap<Integer, Event> eventCache = Cache.getEventCache();
 	
 	private int eventId;
 	
@@ -31,36 +30,6 @@ public class Event implements TicketService{
 	
 	private int seatsAvailable;
 	
-	private List<VenueSeats> seatsPerClass;
-	
-	public int getEventId() {
-		return eventId;
-	}
-
-	public void setEventId(int eventId) {
-		this.eventId = eventId;
-	}
-
-	public int getEventHoldDuration() {
-		return eventHoldDuration;
-	}
-
-	public void setEventHoldDuration(int eventHoldDuration) {		
-		this.eventHoldDuration = eventHoldDuration;
-	}
-
-	public void setSeatsAvailable(int seatsAvailable) {
-		this.seatsAvailable = seatsAvailable;
-	}
-
-	public List<VenueSeats> getSeatsPerClass() {
-		return seatsPerClass;
-	}
-
-	public void setSeatsPerClass(List<VenueSeats> seatsPerClass){		
-		this.seatsPerClass = seatsPerClass;
-	}
-
 	/**
 	 * Create a new <code>Event</code> for a particular <code>venue</code>
 	 * @param eventHoldDuration - Duration in seconds. A SeatHold created for this Event will expire after <code> eventHoldDuration </code> seconds have elapsed. 
@@ -93,6 +62,36 @@ public class Event implements TicketService{
 			seatsAvailable += venSeats.getSeatCount();
 		
 		eventCache.put(getEventId(), this);
+	}
+	
+	private List<VenueSeats> seatsPerClass;
+	
+	public int getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(int eventId) {
+		this.eventId = eventId;
+	}
+
+	public int getEventHoldDuration() {
+		return eventHoldDuration;
+	}
+
+	public void setEventHoldDuration(int eventHoldDuration) {		
+		this.eventHoldDuration = eventHoldDuration;
+	}
+
+	public void setSeatsAvailable(int seatsAvailable) {
+		this.seatsAvailable = seatsAvailable;
+	}
+
+	public List<VenueSeats> getSeatsPerClass() {
+		return seatsPerClass;
+	}
+
+	public void setSeatsPerClass(List<VenueSeats> seatsPerClass){		
+		this.seatsPerClass = seatsPerClass;
 	}
 
 	/**

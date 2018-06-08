@@ -23,6 +23,29 @@ public class SeatHold {
 	private String holdCustomerEmail;
 
 	/**
+	 * Used to create a new SeatHold for a particular (venue seats, customer, event) combination
+	 * 
+	 * @param seats - A {@link com.walmart.ticketing.models.VenueSeats} object containing information 
+	 * about the Class and Count of seats to be held by this SeatHold
+	 * @param holdCustomerEmail - String email id of the Customer
+	 * @param event - Event object to which this SeatHold is attached to
+	 * @throws TicketingException - If <code>seats</code> is null or non-positive
+	 */
+	public SeatHold(VenueSeats seats, int seatClassIndex, String holdCustomerEmail, Event event) throws TicketingException {
+		
+		if(seats == null || seats.getSeatCount() <= 0)
+			throw new TicketingException("Seat count has to be a positive number");
+		
+		setSeatHoldId(++seatHoldSerialID);
+		setEventId(event.getEventId());
+		setSeatClassIndex(seatClassIndex);
+		
+		setSeatHoldExpiry( Instant.now().plusSeconds((long)event.getEventHoldDuration()));
+		setSeats(seats);
+		setHoldCustomerEmail(holdCustomerEmail);
+	}
+	
+	/**
 	 * @return <b>seatHoldId</b> - Integer representing the unique identifier for this SeatHold
 	 */
 	public int getSeatHoldId() {
@@ -83,29 +106,6 @@ public class SeatHold {
 
 	public void setHoldCustomerEmail(String holdCustomerEmail) {
 		this.holdCustomerEmail = holdCustomerEmail;
-	}
-
-	/**
-	 * Used to create a new SeatHold for a particular (venue seats, customer, event) combination
-	 * 
-	 * @param seats - A {@link com.walmart.ticketing.models.VenueSeats} object containing information 
-	 * about the Class and Count of seats to be held by this SeatHold
-	 * @param holdCustomerEmail - String email id of the Customer
-	 * @param event - Event object to which this SeatHold is attached to
-	 * @throws TicketingException - If <code>seats</code> is null or non-positive
-	 */
-	public SeatHold(VenueSeats seats, int seatClassIndex, String holdCustomerEmail, Event event) throws TicketingException {
-		
-		if(seats == null || seats.getSeatCount() <= 0)
-			throw new TicketingException("Seat count has to be a positive number");
-		
-		setSeatHoldId(++seatHoldSerialID);
-		setEventId(event.getEventId());
-		setSeatClassIndex(seatClassIndex);
-		
-		setSeatHoldExpiry( Instant.now().plusSeconds((long)event.getEventHoldDuration()));
-		setSeats(seats);
-		setHoldCustomerEmail(holdCustomerEmail);
 	}
 	
 	public String toString() {
