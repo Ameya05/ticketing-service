@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Logger;
 
 import com.walmart.ticketing.cache.Cache;
 import com.walmart.ticketing.exception.TicketingException;
@@ -19,7 +20,8 @@ public class Event implements TicketService{
 	//TODO - Move defaultHoldDuration to properties file
 	private static int defaultHoldDuration = 300;
 	private static int eventSerialID = 0;
-
+	private static final Logger LOGGER = Logger.getLogger(Event.class.getName());
+	
 	private ConcurrentMap<Integer, SeatHold> seatHoldCache = Cache.getseatHoldCache();
 	private Queue<SeatHold> seatHoldQueue = Cache.getSeatHoldQueue();
 	private ConcurrentMap<Integer, Event> eventCache = Cache.getEventCache();
@@ -140,12 +142,12 @@ public class Event implements TicketService{
 					seatHoldCache.put(seatHold.getSeatHoldId(), seatHold);
 					seatHoldQueue.add(seatHold);
 					
-					System.out.println(seatHold.toString());
+					LOGGER.info(seatHold.toString());
 					
-					System.out.println("Seats available : " + numSeatsAvailable());
+					LOGGER.info("Seats available : " + numSeatsAvailable());
 					
 				} catch (TicketingException e) {
-					System.out.println("Error while creating Seat Hold." + e.getMessage());
+					LOGGER.info("Error while creating Seat Hold - " + e.getMessage());
 				}
 				
 				break;
@@ -153,7 +155,7 @@ public class Event implements TicketService{
 		}
 		
 		if(seatHold == null)
-			System.out.println("Couldn't find and hold "+ numSeats +" seats for " + customerEmail);
+			LOGGER.info("Couldn't find and hold "+ numSeats +" seats for " + customerEmail);
 		
 		return seatHold;
 		
@@ -183,8 +185,9 @@ public class Event implements TicketService{
 		{
 			
 			seatHoldCache.remove(seatHoldId);
-			System.out.println("Reserved " + seatHoldToReserve.getSeats().getSeatCount() + 
-						" " + seatHoldToReserve.getSeats().getSeatClass() + " seats for " +  customerEmail);
+			LOGGER.info("Reservation: " + seatHoldToReserve.getSeats().getSeatCount() + 
+						" " + seatHoldToReserve.getSeats().getSeatClass() + 
+						" seats for " +  customerEmail);
 			
 			return seatHoldToReserve.getEventId() + "-" + seatHoldToReserve.getSeatHoldId();
 		}

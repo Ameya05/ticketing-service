@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ticketing-service</groupId>
   <artifactId>ticketing-service</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>ticketing-service</name>
   <dependencies>
   	<dependency>
@@ -14,11 +14,6 @@
 	<dependency>
 	  <groupId>org.apache.logging.log4j</groupId>
 	  <artifactId>log4j-api</artifactId>
-	  <version>2.11.0</version>
-	</dependency>
-	<dependency>
-	  <groupId>org.apache.logging.log4j</groupId>
-	  <artifactId>log4j-core</artifactId>
 	  <version>2.11.0</version>
 	</dependency>
   </dependencies>

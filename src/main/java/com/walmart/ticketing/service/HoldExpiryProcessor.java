@@ -3,6 +3,7 @@ package com.walmart.ticketing.service;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Logger;
 
 import com.walmart.ticketing.cache.Cache;
 import com.walmart.ticketing.models.Event;
@@ -12,6 +13,7 @@ import com.walmart.ticketing.models.VenueSeats;
 public class HoldExpiryProcessor implements Runnable {
 
 	private static HoldExpiryProcessor instance;
+	private static final Logger LOGGER = Logger.getLogger(HoldExpiryProcessor.class.getName());
 	
 	private ConcurrentMap<Integer, SeatHold> seatHoldCache = Cache.getseatHoldCache();
 	private Queue<SeatHold> seatHoldQueue = Cache.getSeatHoldQueue();
@@ -32,7 +34,7 @@ public class HoldExpiryProcessor implements Runnable {
 	
 	public void run() {
 		
-		System.out.println("Started Hold Expiry Processor ");
+		LOGGER.info("Started Hold Expiry Processor ");
 		
 		while(true) 
 			
@@ -50,12 +52,17 @@ public class HoldExpiryProcessor implements Runnable {
 			{
 				SeatHold nextHold = seatHoldQueue.poll();
 				
-				if(seatHoldCache.containsKey(nextHold.getSeatHoldId()))
+				if(nextHold != null && seatHoldCache.containsKey(nextHold.getSeatHoldId()))
 				{
 					// Remove it from cache since it has expired
 					seatHoldCache.remove(nextHold.getSeatHoldId());
 					Event eventForThisHold = eventCache.get(nextHold.getEventId());
 				
+					// If invalid data, skip further processing
+					if(eventForThisHold == null || eventForThisHold.getSeatsPerClass() == null
+							|| eventForThisHold.getSeatsPerClass().size() <= nextHold.getSeatClassIndex())
+						continue;
+					
 					VenueSeats eventSeats = eventForThisHold.getSeatsPerClass().get(nextHold.getSeatClassIndex());
 					
 					int reclaimedSeatCount = nextHold.getSeats().getSeatCount();
@@ -63,10 +70,10 @@ public class HoldExpiryProcessor implements Runnable {
 					eventSeats.setSeatCount(eventSeats.getSeatCount() + reclaimedSeatCount);
 					eventForThisHold.setSeatsAvailable(eventForThisHold.numSeatsAvailable() + reclaimedSeatCount);
 					
-					System.out.println("\nSeat Hold "+ nextHold.getSeatHoldId() + " expired due to timeout ====>" +
-							nextHold.toString() +
+					LOGGER.info("\nSeat Hold "+ nextHold.getSeatHoldId() + 
+							" expired due to timeout " + nextHold.toString() + 
 							"\nNew "+ eventSeats.getSeatClass() + 
-							" seat count for this event " + eventSeats.getSeatCount() +
+							" tier seat count for this event: " + eventSeats.getSeatCount() +
 							"\nTotal seats available: " + eventForThisHold.numSeatsAvailable());
 				}
 			}
