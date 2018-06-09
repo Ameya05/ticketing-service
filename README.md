@@ -2,7 +2,7 @@
 
 # Ticketing Service
 A Ticketing Service implementation for a high-demand performance venue.
-
+[![Build Status](https://travis-ci.org/Ameya05/ticketing-service.svg?branch=master)](https://travis-ci.org/Ameya05/ticketing-service)
 ## Requirements: 
 
  - [ ] **jdk1.8**
