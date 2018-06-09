@@ -9,10 +9,12 @@ A Ticketing Service implementation for a high-demand performance venue.
  - [ ] **maven**
 
 ## Test and Build: 
-**mvn clean install**
+**mvn clean install**  
 This will build and run the test cases included in the application.
 
 ## Assumptions:
+
+Detailed information about the logic has been accounted for in the JavaDocs written in the source code.
 
 ### Venue
  1. A Venue can have multiple Events created in it. 
@@ -47,3 +49,7 @@ This will build and run the test cases included in the application.
  6. A SeatHold expires after set number of seconds if not reserved. 
  
 ### HoldExpiryProcessor
+1. This is responsible for picking up expired SeatHolds from the `seatHoldQueue` and processing them.
+2. If the SeatHold expires and it is not already reserved, the seats are released back to the Event.
+3. This processor runs till the application is stopped or terminated.
+4. The processor runs in a separate thread and may get preempted on certain remote machines due to threading policies. This might cause SeatHolds to be not processed although they have expired.
